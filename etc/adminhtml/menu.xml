@@ -1,0 +1,50 @@
+<?xml version="1.0"?>
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Backend:etc/menu.xsd">
+    <menu>
+        <add
+                id="Magenest_CallToOrder::calltoorder"
+                title="Call Back Manager"
+                module="Magenest_CallToOrder"
+                sortOrder="60"
+                parent="Magento_Catalog::catalog"
+                resource="Magenest_CallToOrder::calltoorder"
+        />
+        <add
+                id="Magenest_CallToOrder::manager"
+                title="Manage Call Backs"
+                module="Magenest_CallToOrder"
+                sortOrder="70"
+                parent="Magenest_CallToOrder::calltoorder"
+                action="calltoorder/manager/"
+                resource="Magenest_CallToOrder::manager"
+        />
+        <add
+                id="Magenest_CallToOrder::edit"
+                title="Settings"
+                module="Magenest_CallToOrder"
+                sortOrder="80"
+                parent="Magenest_CallToOrder::calltoorder"
+                action="adminhtml/system_config/edit/section/calltoorder_setting"
+                resource="Magenest_CallToOrder::edit"
+        />
+        <add
+                id="Magenest_CallToOrder::report"
+                title="Report"
+                module="Magenest_CallToOrder"
+                sortOrder="85"
+                parent="Magenest_CallToOrder::calltoorder"
+                action="calltoorder/report"
+                resource="Magenest_CallToOrder::report"
+        />
+        <add
+                id="Magenest_CallToOrder::template"
+                title="Email Templates"
+                module="Magenest_CallToOrder"
+                sortOrder="100"
+                parent="Magenest_CallToOrder::calltoorder"
+                action="calltoorder/template"
+                resource="Magenest_CallToOrder::template"
+        />
+    </menu>
+</config>

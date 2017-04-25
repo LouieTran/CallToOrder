@@ -1,0 +1,25 @@
+<?xml version="1.0"?>
+
+<page xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+      xsi:noNamespaceSchemaLocation="urn:magento:framework:View/Layout/etc/page_configuration.xsd">
+    <!--<update handle="formkey"/>-->
+    <!--<update handle="calltoorder_report_grid_block"/>-->
+    <body>
+        <!--<referenceContainer name="page.main.actions">-->
+            <!--<block class="Magento\Backend\Block\Template"-->
+                      <!--name="report_buttons"-->
+                      <!--template="Magenest_CallToOrder::report/toolbar/buttons.phtml"/>-->
+        <!--</referenceContainer>-->
+        <referenceContainer name="content">
+            <!--<block class="Magenest\CallToOrder\Block\Adminhtml\Report"-->
+                   <!--name="adminhtml.block.calltoorder.report"-->
+                   <!--template="Magenest_CallToOrder::report/index.phtml"/>-->
+            <block class="\Magenest\CallToOrder\Block\Report\Report"
+                   name="report.index"
+                   template="Magenest_CallToOrder::report/index.phtml"
+                   after="-">
+            </block>
+        </referenceContainer>
+
+    </body>
+</page>
