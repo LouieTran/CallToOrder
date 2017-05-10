@@ -4,94 +4,63 @@
  * See COPYING.txt for license details.
  *
  *
- * Magenest_Blog extension
+ * Magenest_Ticket extension
  * NOTICE OF LICENSE
  *
  * @category  Magenest
- * @package   Magenest_Blog
- * @author <ThaoPV>-thaopw@gmail.com
+ * @package   Magenest_Ticket
+ * @author ThaoPV <thaopw@gmail.com>
  */
 namespace Magenest\CallToOrder\Controller\Adminhtml\Manager;
 
-use Magento\Backend\App\Action;
-use Magento\Backend\App\Action\Context;
-use Magento\Framework\Registry;
-use Magento\Framework\View\Result\PageFactory;
-use Magenest\CallToOrder\Model\ResourceModel\Manager\CollectionFactory as ManagerCollectionFactory;
+use Magento\Framework\Controller\ResultFactory;
+use Magento\Framework\Exception\LocalizedException;
 use Magenest\CallToOrder\Controller\Adminhtml\Manager as ManagerController;
-use Magento\Ui\Component\MassAction\Filter;
 
 /**
  * Class MassStatus
- * 
  * @package Magenest\CallToOrder\Controller\Adminhtml\Manager
  */
-
 class MassStatus extends ManagerController
 {
     /**
-     * @var Filter
-     */
-    protected $_logger;
-    protected $_filter;
-
-    /**
-     * @var \Magento\Backend\Model\View\Result\ForwardFactory
-     */
-    protected $resultForwardFactory;
-
-    /**
-     * MassStatus constructor.
-     * @param Context $context
-     * @param Registry $coreRegistry
-     * @param PageFactory $resultPageFactory
-     * @param ManagerCollectionFactory $collectionFactory
-     * @param Filter $filter
-     * @param \Magento\Backend\Model\View\Result\ForwardFactory $resultForwardFactory
-     */
-    public function __construct(
-        Context $context,
-        Registry $coreRegistry,
-        PageFactory $resultPageFactory,
-        ManagerCollectionFactory $collectionFactory,
-        Filter $filter,
-        \Magento\Backend\Model\View\Result\ForwardFactory $resultForwardFactory,
-        \Psr\Log\LoggerInterface $loggerInterface,
-        \Magenest\CallToOrder\Model\ManagerFactory $managerFactory
-    ) {
-        $this->_logger = $loggerInterface;
-        $this->manager = $managerFactory;
-        $this->_filter = $filter;
-        $this->resultForwardFactory = $resultForwardFactory;
-        parent::__construct($context, $coreRegistry, $resultPageFactory, $collectionFactory);
-    }
-
-    /**
-     * @return $this
+     * execute action
+     *
+     * @return \Magento\Backend\Model\View\Result\Redirect
      */
     public function execute()
     {
-        $data = $this->_request->getParams();
-        $this->_logger->debug(print_r($data,true));
 
-        $array = $data['selected'];
-        $status = (int) $this->getRequest()->getParam('status');
+        $collection = $this->getRequest()->getParams();
+        $model = \Magento\Framework\App\ObjectManager::getInstance()->create('Magenest\CallToOrder\Model\Manager');
+        //not chose all
+        if(isset($collection['selected'])){
+            $cols = $collection['selected'];
+        }
+        // chose all image
+        else{
+            $cols=$model->getCollection()->getAllIds();
+        }
+        $status = $collection['status'];
         $totals = 0;
         try {
-            foreach ($array as $item) {
-
-                /** @var \Magenest\CallToOrder\Model\ResourceModel\Manager\Collection $item */
-                $model = $this->manager->create()->load($item);
+            foreach ($cols as $item) {
+                /** @var \Magenest\CallToOrder\Model\Manager $item */
+                $model->load($item);
                 $model->setStatus($status)->save();
                 $totals++;
-
             }
-            $this->messageManager->addSuccessMessage(__('A total of %1 record(s) have been updated.', $totals));
+//            \Magento\Framework\App\ObjectManager::getInstance()->create('Psr\Log\LoggerInterface')->debug(print_r($collection, true));
 
-        } catch (\Magento\Framework\Exception\LocalizedException $e) {
+            $this->messageManager->addSuccessMessage(__('A total of %1 record(s) have been updated.', $totals));
+        } catch (LocalizedException $e) {
             $this->messageManager->addErrorMessage($e->getMessage());
+        } catch (\Exception $e) {
+            $this->_getSession()->addException($e, __('Something went wrong while updating the product(s) status.'));
         }
-        $resultRedirect = $this->resultRedirectFactory->create();
-        return $resultRedirect->setPath('*/*');
+
+        /** @var \Magento\Backend\Model\View\Result\Redirect $resultRedirect */
+        $resultRedirect = $this->resultFactory->create(ResultFactory::TYPE_REDIRECT);
+        return $resultRedirect->setPath('*/*/');
     }
 }
